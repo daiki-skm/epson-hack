@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+    <h1>だいき</h1>
     <h1>daiki-checkout</h1>
     <h1>{{ msg }}</h1>
     <p>
