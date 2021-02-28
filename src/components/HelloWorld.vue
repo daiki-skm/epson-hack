@@ -41,6 +41,7 @@ export default {
     authorizeButton: null,
     signoutButton: null,
     gapi: null,
+    files: [],
   }),
   mounted() {
     // this.authorizeButton = document.getElementById('authorize_button');
