@@ -8,7 +8,7 @@
 
       <section>
         <div id="file" style="margin-top: 20px;">
-          <input id="file-input" type="file" onchange="upload(this.files[0])" />
+          <input id="file-input" type="file" onchange="this.upload(this.files[0])" />
         </div>
       </section>
     </body>
