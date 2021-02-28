@@ -23,9 +23,11 @@ export default {
     show: true,
   }),
   methods: {
-    this.textareavalue = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + this.getUrl + "&choe=UTF-8QRCode"
+    test () {
+      this.textareavalue = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + this.getUrl + "&choe=UTF-8QRCode"
       var link = document.createElement('a')
       document.getElementById("back").style.backgroundImage = "url(" + this.textareavalue + ");"
+    }
   }
 };
 </script>
