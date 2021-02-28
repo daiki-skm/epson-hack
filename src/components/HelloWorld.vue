@@ -1,7 +1,9 @@
 <template>
   <div class="hello">
     <body>
+      <img v-if="show" :src="textareavalue"> 
       <section>
+        <v-btn @click="test()">💩</v-btn>
         <v-btn id="login">ログイン</v-btn>
         <v-btn id="logout">ログアウト</v-btn>
       </section>
@@ -25,6 +27,9 @@ export default {
     msg: String
   },
   data: () => ({
+    getUrl: 'https://photos.app.goo.gl/6nNMr6gmhpHZnT8H8',
+    textareavalue: "",
+    show: true,
     Picasa: null,
     picasa: null,
     accessToken: null,
@@ -62,6 +67,10 @@ export default {
   watch: {
   },
   methods: {
+    test(){
+      this.textareavalue = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + this.getUrl + "&choe=UTF-8QRCode"
+      this.show = !this.show
+    },
     pullPhotoUrl () {
       // アクセストークンを取得します。
       this.picasa.renewAccessToken(this.config, this.refreshToken)
