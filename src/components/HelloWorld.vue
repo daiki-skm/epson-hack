@@ -1,182 +1,151 @@
 <template>
-  <div class="hello">
-    <body>
-      <section>
-        <button id="login">ログイン</button>
-        <button id="logout">ログアウト</button>
-      </section>
+  <v-container>
+    <v-row class="text-center">
+      <v-col cols="12">
+        <v-img
+          :src="require('../assets/logo.svg')"
+          class="my-3"
+          contain
+          height="200"
+        />
+      </v-col>
 
-      <section>
-        <div id="file" style="margin-top: 20px;">
-          <input type="file" id="file-input" ref="myFiles" @change="previewFiles" multiple>
-        </div>
-      </section>
-    </body>
-  </div>
+      <v-col class="mb-4">
+        <h1 class="display-2 font-weight-bold mb-3">
+          Welcome to Vuetify
+        </h1>
+
+        <p class="subheading font-weight-regular">
+          For help and collaboration with other Vuetify developers,
+          <br>please join our online
+          <a
+            href="https://community.vuetifyjs.com"
+            target="_blank"
+          >Discord Community</a>
+        </p>
+      </v-col>
+
+      <v-col
+        class="mb-5"
+        cols="12"
+      >
+        <h2 class="headline font-weight-bold mb-3">
+          What's next?
+        </h2>
+
+        <v-row justify="center">
+          <a
+            v-for="(next, i) in whatsNext"
+            :key="i"
+            :href="next.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ next.text }}
+          </a>
+        </v-row>
+      </v-col>
+
+      <v-col
+        class="mb-5"
+        cols="12"
+      >
+        <h2 class="headline font-weight-bold mb-3">
+          Important Links
+        </h2>
+
+        <v-row justify="center">
+          <a
+            v-for="(link, i) in importantLinks"
+            :key="i"
+            :href="link.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ link.text }}
+          </a>
+        </v-row>
+      </v-col>
+
+      <v-col
+        class="mb-5"
+        cols="12"
+      >
+        <h2 class="headline font-weight-bold mb-3">
+          Ecosystem
+        </h2>
+
+        <v-row justify="center">
+          <a
+            v-for="(eco, i) in ecosystem"
+            :key="i"
+            :href="eco.href"
+            class="subheading mx-3"
+            target="_blank"
+          >
+            {{ eco.text }}
+          </a>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
+  export default {
+    name: 'HelloWorld',
 
-export default {
-  name: 'HelloWorld',
-  components:{
-  },
-  props: {
-    msg: String
-  },
-  data: () => ({
-    Picasa: null,
-    picasa: null,
-    accessToken: null,
-    config: {
-      clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
-      redirectURI: 'https://daiki-photo.web.app/',
-      clientSecret: 'IJdpDEl7kJY_6hutq1C5lGZK'
-    },
-    refreshToken: 'yourRefreshToken',
-    apiKey: 'AIzaSyAt4zFCrqpQzUt_psIRRqv2l7tBUEVoywc',
-    clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
-    discoveryDocs: [],
-    scopes: 'https://www.googleapis.com/auth/photoslibrary',
-    authorizeButton: null,
-    signoutButton: null,
-    gapi: null,
-    files: [],
-  }),
-  created() {
-    this.Picasa = require('picasa');
-    this.picasa = new this.Picasa();
-  },
-  mounted() {
-    this.authorizeButton = document.getElementById('login');
-    this.signoutButton = document.getElementById('logout');
-    // setInterval と if(window.gapi) で確認する
-    const id = setInterval(() => {
-      if(window.gapi){
-        this.gapi = window.gapi;
-        this.handleClientLoad();
-        clearInterval(id);
-      }
-    }, 1000);
-  },
-  watch: {
-  },
-  methods: {
-    pullPhotoUrl () {
-      // アクセストークンを取得します。
-      this.picasa.renewAccessToken(this.config, this.refreshToken)
-      .then(token => {
-        this.accessToken = token;
-        // アルバム一覧を取得します。
-        return this.picasa.getAlbums(this.accessToken, null);
-      })
-      .then(albums => {
-        // アルバム内の写真一覧を取得します。
-        return Promise.all(albums.map(album => {
-          return this.picasa.getPhotos(this.accessToken, {albumId: album.id});
-        }));
-      })
-      .then(albumResults => {
-        for (const photos of albumResults) {
-          for (const photo of photos) {
-            console.log(`Content-Type: ${photo.content.type}, URL: ${photo.content.src}`)
-          }
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    },
-    handleClientLoad () {
-      this.gapi.load('client:auth2', this.initClient);
-    },
-    initClient() {
-      this.gapi.client.init({
-        apiKey: this.apiKey,
-        clientId: this.clientId,
-        discoveryDocs: this.discoveryDocs,
-        scope: this.scopes,
-      }).then(() => {
-        // サインイン状態を監視し、状態に変化があったときに「updateSigninStatus」を呼ぶ
-        this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
-        // 初期起動時のサインイン状態で画面制御
-        this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
-        this.authorizeButton.onclick = this.handleAuthClick;
-        this.signoutButton.onclick = this.handleSignoutClick;
-      });
-    },
-    updateSigninStatus(isSignedIn) {
-      if (isSignedIn) {
-        this.authorizeButton.style.display = 'none';
-        this.signoutButton.style.display = 'block';
-      } else {
-        this.authorizeButton.style.display = 'block';
-        this.signoutButton.style.display = 'none';
-      }
-    },
-    handleAuthClick() {
-      this.gapi.auth2.getAuthInstance().signIn();
-    },
-    handleSignoutClick() {
-      this.gapi.auth2.getAuthInstance().signOut();
-      this.gapi.auth2.getAuthInstance().disconnect();
-    },
-    previewFiles() {
-      this.files = this.$refs.myFiles.files
-      console.log(this.files[0])
-      this.upload(this.files[0])
-    },
-    // 選択したファイルをGoogleフォトへアップルードする
-    upload(file) {
-      var accessToken = this.gapi.auth.getToken().access_token; // OAuthアクセスキーを取得
-
-      // Media Upload APIでファイルをアップロード
-      fetch('https://photoslibrary.googleapis.com/v1/uploads', {
-        method: 'POST',
-        headers: new Headers({ 
-          'Authorization': 'Bearer ' + accessToken,
-          "Content-type": "application/octet-stream",
-          "X-Goog-Upload-Content-Type": file.type,
-          "X-Goog-Upload-Protocol": "raw"
-        }),
-        body: file,
-      })
-      .then(res => res.text())
-      .then(token => {
-        // レスポンスのUploadTokenをパラメータにbatchCreateを呼ぶ
-        return this.batchCreate(token);
-      })
-      .then(() => {
-        this.pullPhotoUrl()
-      });
-    },
-    // Media Batch Create APIを呼び出し、Googleフォトへアップロードしたファイルを登録
-    batchCreate(uploadToken) {
-      // gapiで、Media Batch Create API呼び出しリクエストの作成
-      var restRequest = this.gapi.client.request({
-        'path': 'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
-        'method': 'POST',
-        'body': {
-          'newMediaItems' : [
-            {
-              'description': "test batch create", // ファイルの概要
-              'simpleMediaItem': {
-                'uploadToken': uploadToken,  // Media Upload APIのレスポンスで取得したUploadTokenをセット
-                'fileName': 'test file name' // ファイル名
-              }
-            }
-          ]
-        }
-      });
-      // リクエストの実行
-      restRequest.execute((resp) => {
-        console.log(resp);
-      });
-    },
+    data: () => ({
+      ecosystem: [
+        {
+          text: 'vuetify-loader',
+          href: 'https://github.com/vuetifyjs/vuetify-loader',
+        },
+        {
+          text: 'github',
+          href: 'https://github.com/vuetifyjs/vuetify',
+        },
+        {
+          text: 'awesome-vuetify',
+          href: 'https://github.com/vuetifyjs/awesome-vuetify',
+        },
+      ],
+      importantLinks: [
+        {
+          text: 'Documentation',
+          href: 'https://vuetifyjs.com',
+        },
+        {
+          text: 'Chat',
+          href: 'https://community.vuetifyjs.com',
+        },
+        {
+          text: 'Made with Vuetify',
+          href: 'https://madewithvuejs.com/vuetify',
+        },
+        {
+          text: 'Twitter',
+          href: 'https://twitter.com/vuetifyjs',
+        },
+        {
+          text: 'Articles',
+          href: 'https://medium.com/vuetify',
+        },
+      ],
+      whatsNext: [
+        {
+          text: 'Explore components',
+          href: 'https://vuetifyjs.com/components/api-explorer',
+        },
+        {
+          text: 'Select a layout',
+          href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
+        },
+        {
+          text: 'Frequently Asked Questions',
+          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
+        },
+      ],
+    }),
   }
-}
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
