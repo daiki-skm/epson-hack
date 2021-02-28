@@ -6,7 +6,7 @@
         <button id="logout">ログアウト</button>
       </section>
 
-      <button @click="api()"></button>
+      <button @click="api()">印刷</button>
 
       <section>
         <div id="file" style="margin-top: 20px;">
