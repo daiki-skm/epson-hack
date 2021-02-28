@@ -1,10 +1,5 @@
 <template>
   <v-app>
-    <v-app-bar app color="black" dark>
-      <h1>NeosVR</h1>
-      <h2>japan</h2>
-    </v-app-bar>
-
     <v-main>
       <HelloWorld/>
     </v-main>
