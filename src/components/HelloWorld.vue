@@ -6,6 +6,8 @@
         <button id="logout">ログアウト</button>
       </section>
 
+      <button @click="api()"></button>
+
       <section>
         <div id="file" style="margin-top: 20px;">
           <input type="file" id="file-input" ref="myFiles" @change="previewFiles" multiple>
@@ -19,6 +21,7 @@
   export default {
     name: 'HelloWorld',
     data: () => ({
+      responsedata: '',
       Picasa: null,
       picasa: null,
       accessToken: null,
