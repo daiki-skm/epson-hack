@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <HelloWorld />
+    <v-text-field v-model="getUrl" placeholder="input here"></v-text-field>
   </div>
   
 </template>
