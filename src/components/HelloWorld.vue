@@ -148,7 +148,7 @@
         },
       ],
     }),
-     methods: {
+    methods: {
       api(){
         var axios = require('axios');
         var data = 'grant_type=password&username=qhp4502q5er245@print.epsonconnect.com&password=';
@@ -239,8 +239,7 @@
         .catch(function (error) {
           console.log(error.response);
         });
-
       }
   }
-  }
+}
 </script>
