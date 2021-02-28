@@ -38,8 +38,8 @@ export default {
     msg: String
   },
   data: () => ({
-    apiKey: 'AIzaSyDtmgKef90c4WVsw5KzQ9pR_kRdz8oACM0',
-    clientId: '1030214100740-hj8tj2jfiurrefrpogkcojrl5qr5bg9r.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAt4zFCrqpQzUt_psIRRqv2l7tBUEVoywc',
+    clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
     discoveryDocs: [],
     scopes: 'https://www.googleapis.com/auth/photoslibrary',
     authorizeButton: null,
