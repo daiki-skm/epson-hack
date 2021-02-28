@@ -8,20 +8,10 @@
 
       <section>
         <div id="file" style="margin-top: 20px;">
-          <!-- <input id="file-input" type="file" @change="upload(this.files[0])" /> -->
           <input type="file" id="file-input" ref="myFiles" @change="previewFiles" multiple>
         </div>
       </section>
     </body>
-
-    <!-- <div class="container">
-      <button id="authorize_button">Authorize</button>
-      <button id="signout_button">Sign Out</button>
-      <pre id="content" style="white-space: pre-wrap;"></pre>
-    </div> -->
-
-    <h1>だいき</h1>
-    <h1>daiki-checkout</h1>
   </div>
 </template>
 
@@ -45,8 +35,6 @@ export default {
     files: [],
   }),
   mounted() {
-    // this.authorizeButton = document.getElementById('authorize_button');
-    // this.signoutButton = document.getElementById('signout_button');
     this.authorizeButton = document.getElementById('login');
     this.signoutButton = document.getElementById('logout');
     // setInterval と if(window.gapi) で確認する
@@ -75,10 +63,6 @@ export default {
         this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
         // 初期起動時のサインイン状態で画面制御
         this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
-        // Listen for sign-in state changes.
-        // this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
-        // // Handle the initial sign-in state.
-        // this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
         this.authorizeButton.onclick = this.handleAuthClick;
         this.signoutButton.onclick = this.handleSignoutClick;
       });
@@ -87,7 +71,6 @@ export default {
       if (isSignedIn) {
         this.authorizeButton.style.display = 'none';
         this.signoutButton.style.display = 'block';
-        // this.listFiles();
       } else {
         this.authorizeButton.style.display = 'block';
         this.signoutButton.style.display = 'none';
@@ -100,67 +83,6 @@ export default {
       this.gapi.auth2.getAuthInstance().signOut();
       this.gapi.auth2.getAuthInstance().disconnect();
     },
-    /* appendPre(message) {
-      const pre = document.getElementById('content');
-      const textContent = document.createTextNode(message + '\n');
-      pre.appendChild(textContent);
-    },
-    listFiles() {
-      this.gapi.client.drive.files.list({
-        'pageSize': 10,
-        'fields': "nextPageToken, files(id, name)"
-      }).then((response) => {
-          this.appendPre('Files:');
-          const files = response.result.files;
-          if (files && files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-              let file = files[i];
-              this.appendPre(file.name + ' (' + file.id + ')');
-            }
-          } else {
-            this.appendPre('No files found.');
-          }
-      });
-    }, */
-    // Google API Client Library for JavaScript ロード時のイベント
-    /* handleClientLoad() {
-      gapi.load('client:auth2', () => {
-        gapi.client.init({
-          apiKey: this.apiKey,
-          discoveryDocs: this.discoveryDocs,
-          clientId: this.clientId,
-          scope: this.scopes
-        }).then(function () {
-          // サインイン状態を監視し、状態に変化があったときに「updateSigninStatus」を呼ぶ
-          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-          // 初期起動時のサインイン状態で画面制御
-          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        });
-      });
-    },
-    // ログイン
-    login() {
-      this.gapi.auth2.getAuthInstance().signIn();
-    },
-    // ログアウト
-    logout() {
-      this.gapi.auth2.getAuthInstance().signOut();
-      this.gapi.auth2.getAuthInstance().disconnect();
-    },
-    // ログイン・ログアウト状態に変更が発生した時に呼ばれる関数
-    updateSigninStatus(isSignedIn) {
-      if (isSignedIn) {
-        //ログイン状態
-        document.getElementById("login").style.display = 'none';
-        document.getElementById("logout").style.display = 'block';
-        document.getElementById("file").style.display = 'block';
-      } else {
-        //ログアウト
-        document.getElementById("login").style.display = 'block';
-        document.getElementById("logout").style.display = 'none';
-        document.getElementById("file").style.display = 'none';
-      }
-    }, */
     previewFiles() {
       this.files = this.$refs.myFiles.files
       console.log(this.files[0])
