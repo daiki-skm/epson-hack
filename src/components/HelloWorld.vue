@@ -1,10 +1,9 @@
 <template>
-  <!-- <div class="hello">
+  <div class="hello">
     <body>
-      <h1>Upload Sample</h1>
       <section>
-        <button id="login" onclick="login()">ログイン</button>
-        <button id="logout" onclick="logout()">ログアウト</button>
+        <button id="login">ログイン</button>
+        <button id="logout">ログアウト</button>
       </section>
 
       <section>
@@ -12,27 +11,24 @@
           <input id="file-input" type="file" onchange="upload(this.files[0])" />
         </div>
       </section>
-      <div id="daiki" />
     </body>
+
+    <!-- <div class="container">
+      <button id="authorize_button">Authorize</button>
+      <button id="signout_button">Sign Out</button>
+      <pre id="content" style="white-space: pre-wrap;"></pre>
+    </div> -->
 
     <h1>だいき</h1>
     <h1>daiki-checkout</h1>
-  </div> -->
-  <div class="container">
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button">Authorize</button>
-    <button id="signout_button">Sign Out</button>
-    <pre id="content" style="white-space: pre-wrap;"></pre>
   </div>
 </template>
 
 <script>
-// import API from "./api"
 
 export default {
   name: 'HelloWorld',
   components:{
-    // API
   },
   props: {
     msg: String
@@ -47,9 +43,10 @@ export default {
     gapi: null,
   }),
   mounted() {
-    this.authorizeButton = document.getElementById('authorize_button');
-    this.signoutButton = document.getElementById('signout_button');
-    // app.blame.php で api.js を取得する前に mounted が実行される可能性があるため 
+    // this.authorizeButton = document.getElementById('authorize_button');
+    // this.signoutButton = document.getElementById('signout_button');
+    this.authorizeButton = document.getElementById('login');
+    this.signoutButton = document.getElementById('logout');
     // setInterval と if(window.gapi) で確認する
     const id = setInterval(() => {
       if(window.gapi){
@@ -58,13 +55,6 @@ export default {
         clearInterval(id);
       }
     }, 1000);
-    /* const sub = document.getElementById("daiki")
-    let recaptchaScript = document.createElement('script')
-    recaptchaScript.setAttribute('src', 'https://www.google.com/recaptcha/api.js')
-    sub.appendChild(recaptchaScript)
-    console.log(recaptchaScript.setAttribute('src', 'https://www.google.com/recaptcha/api.js')) */
-    // onload="this.onload=function(){};handleClientLoad()"
-    // onreadystatechange="if (this.readyState === 'complete') this.onload()"
   },
   watch: {
   },
@@ -79,54 +69,57 @@ export default {
         discoveryDocs: this.discoveryDocs,
         scope: this.scopes,
       }).then(() => {
-          // Listen for sign-in state changes.
-          this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
-          // // Handle the initial sign-in state.
-          this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
-          this.authorizeButton.onclick = this.handleAuthClick;
-          this.signoutButton.onclick = this.handleSignoutClick;
-        }, (error) => {
-          this.appendPre(JSON.stringify(error, null, 2));
-        });
-      },
-      updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-          this.authorizeButton.style.display = 'none';
-          this.signoutButton.style.display = 'block';
-          this.listFiles();
-        } else {
-          this.authorizeButton.style.display = 'block';
-          this.signoutButton.style.display = 'none';
-        }
-      },
-      handleAuthClick() {
-        this.gapi.auth2.getAuthInstance().signIn();
-      },
-      handleSignoutClick() {
-        this.gapi.auth2.getAuthInstance().signOut();
-      },
-      appendPre(message) {
-        const pre = document.getElementById('content');
-        const textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-      },
-      listFiles() {
-        this.gapi.client.drive.files.list({
-          'pageSize': 10,
-          'fields': "nextPageToken, files(id, name)"
-        }).then((response) => {
-            this.appendPre('Files:');
-            const files = response.result.files;
-            if (files && files.length > 0) {
-              for (let i = 0; i < files.length; i++) {
-                let file = files[i];
-                this.appendPre(file.name + ' (' + file.id + ')');
-              }
-            } else {
-              this.appendPre('No files found.');
+        // サインイン状態を監視し、状態に変化があったときに「updateSigninStatus」を呼ぶ
+        this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+        // 初期起動時のサインイン状態で画面制御
+        this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
+        // Listen for sign-in state changes.
+        // this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+        // // Handle the initial sign-in state.
+        // this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
+        this.authorizeButton.onclick = this.handleAuthClick;
+        this.signoutButton.onclick = this.handleSignoutClick;
+      });
+    },
+    updateSigninStatus(isSignedIn) {
+      if (isSignedIn) {
+        this.authorizeButton.style.display = 'none';
+        this.signoutButton.style.display = 'block';
+        // this.listFiles();
+      } else {
+        this.authorizeButton.style.display = 'block';
+        this.signoutButton.style.display = 'none';
+      }
+    },
+    handleAuthClick() {
+      this.gapi.auth2.getAuthInstance().signIn();
+    },
+    handleSignoutClick() {
+      this.gapi.auth2.getAuthInstance().signOut();
+      this.gapi.auth2.getAuthInstance().disconnect();
+    },
+    /* appendPre(message) {
+      const pre = document.getElementById('content');
+      const textContent = document.createTextNode(message + '\n');
+      pre.appendChild(textContent);
+    },
+    listFiles() {
+      this.gapi.client.drive.files.list({
+        'pageSize': 10,
+        'fields': "nextPageToken, files(id, name)"
+      }).then((response) => {
+          this.appendPre('Files:');
+          const files = response.result.files;
+          if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+              let file = files[i];
+              this.appendPre(file.name + ' (' + file.id + ')');
             }
-        });
-      },
+          } else {
+            this.appendPre('No files found.');
+          }
+      });
+    }, */
     // Google API Client Library for JavaScript ロード時のイベント
     /* handleClientLoad() {
       gapi.load('client:auth2', () => {
@@ -145,12 +138,12 @@ export default {
     },
     // ログイン
     login() {
-      gapi.auth2.getAuthInstance().signIn();
+      this.gapi.auth2.getAuthInstance().signIn();
     },
     // ログアウト
     logout() {
-      gapi.auth2.getAuthInstance().signOut();
-      gapi.auth2.getAuthInstance().disconnect();
+      this.gapi.auth2.getAuthInstance().signOut();
+      this.gapi.auth2.getAuthInstance().disconnect();
     },
     // ログイン・ログアウト状態に変更が発生した時に呼ばれる関数
     updateSigninStatus(isSignedIn) {
@@ -165,10 +158,10 @@ export default {
         document.getElementById("logout").style.display = 'none';
         document.getElementById("file").style.display = 'none';
       }
-    },
+    }, */
     // 選択したファイルをGoogleフォトへアップルードする
     upload(file) {
-      var accessToken = gapi.auth.getToken().access_token; // OAuthアクセスキーを取得
+      var accessToken = this.gapi.auth.getToken().access_token; // OAuthアクセスキーを取得
 
       // Media Upload APIでファイルをアップロード
       fetch('https://photoslibrary.googleapis.com/v1/uploads', {
@@ -184,13 +177,13 @@ export default {
       .then(res => res.text())
       .then(token => {
         // レスポンスのUploadTokenをパラメータにbatchCreateを呼ぶ
-        return batchCreate(token);
+        return this.batchCreate(token);
       });
     },
     // Media Batch Create APIを呼び出し、Googleフォトへアップロードしたファイルを登録
     batchCreate(uploadToken) {
       // gapiで、Media Batch Create API呼び出しリクエストの作成
-      var restRequest = gapi.client.request({
+      var restRequest = this.gapi.client.request({
         'path': 'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
         'method': 'POST',
         'body': {
@@ -205,12 +198,11 @@ export default {
           ]
         }
       });
-
       // リクエストの実行
       restRequest.execute((resp) => {
         console.log(resp);
       });
-    }, */
+    },
   }
 }
 </script>
