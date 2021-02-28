@@ -25,6 +25,15 @@ export default {
     msg: String
   },
   data: () => ({
+    Picasa: null,
+    picasa: null,
+    accessToken: null,
+    config: {
+      clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
+      redirectURI: 'https://daiki-photo.web.app/',
+      clientSecret: 'IJdpDEl7kJY_6hutq1C5lGZK'
+    },
+    refreshToken: 'yourRefreshToken',
     apiKey: 'AIzaSyAt4zFCrqpQzUt_psIRRqv2l7tBUEVoywc',
     clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
     discoveryDocs: [],
@@ -34,6 +43,10 @@ export default {
     gapi: null,
     files: [],
   }),
+  created() {
+    this.Picasa = require('picasa');
+    this.picasa = new this.Picasa();
+  },
   mounted() {
     this.authorizeButton = document.getElementById('login');
     this.signoutButton = document.getElementById('logout');
@@ -49,6 +62,31 @@ export default {
   watch: {
   },
   methods: {
+    pullPhotoUrl () {
+      // アクセストークンを取得します。
+      this.picasa.renewAccessToken(this.config, this.refreshToken)
+      .then(token => {
+        this.accessToken = token;
+        // アルバム一覧を取得します。
+        return this.picasa.getAlbums(this.accessToken, null);
+      })
+      .then(albums => {
+        // アルバム内の写真一覧を取得します。
+        return Promise.all(albums.map(album => {
+          return this.picasa.getPhotos(this.accessToken, {albumId: album.id});
+        }));
+      })
+      .then(albumResults => {
+        for (const photos of albumResults) {
+          for (const photo of photos) {
+            console.log(`Content-Type: ${photo.content.type}, URL: ${photo.content.src}`)
+          }
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
     handleClientLoad () {
       this.gapi.load('client:auth2', this.initClient);
     },
@@ -107,6 +145,9 @@ export default {
       .then(token => {
         // レスポンスのUploadTokenをパラメータにbatchCreateを呼ぶ
         return this.batchCreate(token);
+      })
+      .then(() => {
+        this.pullPhotoUrl()
       });
     },
     // Media Batch Create APIを呼び出し、Googleフォトへアップロードしたファイルを登録
