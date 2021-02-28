@@ -8,7 +8,8 @@
 
       <section>
         <div id="file" style="margin-top: 20px;">
-          <input id="file-input" type="file" @change="this.upload(this.files[0])" />
+          <!-- <input id="file-input" type="file" @change="upload(this.files[0])" /> -->
+          <input type="file" id="file-input" ref="myFiles" @change="previewFiles" multiple>
         </div>
       </section>
     </body>
@@ -160,6 +161,11 @@ export default {
         document.getElementById("file").style.display = 'none';
       }
     }, */
+    previewFiles() {
+      this.files = this.$refs.myFiles.files
+      console.log(this.files[0])
+      this.upload(this.files[0])
+    },
     // 選択したファイルをGoogleフォトへアップルードする
     upload(file) {
       var accessToken = this.gapi.auth.getToken().access_token; // OAuthアクセスキーを取得
