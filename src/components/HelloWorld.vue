@@ -4,6 +4,7 @@
       <section>
         <button id="login">ログイン</button>
         <button id="logout">ログアウト</button>
+        <button  @click="api()">印刷</button>
       </section>
 
       <section>
@@ -19,6 +20,7 @@
   export default {
     name: 'HelloWorld',
     data: () => ({
+      responsedata:"",
       Picasa: null,
       picasa: null,
       accessToken: null,
