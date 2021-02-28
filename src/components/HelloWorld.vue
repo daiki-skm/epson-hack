@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <!-- <div class="hello">
     <body>
       <h1>Upload Sample</h1>
       <section>
@@ -13,41 +13,16 @@
         </div>
       </section>
       <div id="daiki" />
-      <!-- <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()">
-      </script> -->
     </body>
 
     <h1>だいき</h1>
     <h1>daiki-checkout</h1>
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  </div> -->
+  <div class="container">
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button">Authorize</button>
+    <button id="signout_button">Sign Out</button>
+    <pre id="content" style="white-space: pre-wrap;"></pre>
   </div>
 </template>
 
@@ -67,9 +42,22 @@ export default {
     clientId: '1030214100740-hj8tj2jfiurrefrpogkcojrl5qr5bg9r.apps.googleusercontent.com',
     discoveryDocs: [],
     scopes: 'https://www.googleapis.com/auth/photoslibrary',
-    judge: false,
+    authorizeButton: null,
+    signoutButton: null,
+    gapi: null,
   }),
   mounted() {
+    this.authorizeButton = document.getElementById('authorize_button');
+    this.signoutButton = document.getElementById('signout_button');
+    // app.blame.php で api.js を取得する前に mounted が実行される可能性があるため 
+    // setInterval と if(window.gapi) で確認する
+    const id = setInterval(() => {
+      if(window.gapi){
+        this.gapi = window.gapi;
+        this.handleClientLoad();
+        clearInterval(id);
+      }
+    }, 1000);
     /* const sub = document.getElementById("daiki")
     let recaptchaScript = document.createElement('script')
     recaptchaScript.setAttribute('src', 'https://www.google.com/recaptcha/api.js')
@@ -79,9 +67,66 @@ export default {
     // onreadystatechange="if (this.readyState === 'complete') this.onload()"
   },
   watch: {
-
   },
   methods: {
+    handleClientLoad () {
+      this.gapi.load('client:auth2', this.initClient);
+    },
+    initClient() {
+      this.gapi.client.init({
+        apiKey: this.apiKey,
+        clientId: this.clientId,
+        discoveryDocs: this.discoveryDocs,
+        scope: this.scopes,
+      }).then(() => {
+          // Listen for sign-in state changes.
+          this.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+          // // Handle the initial sign-in state.
+          this.updateSigninStatus(this.gapi.auth2.getAuthInstance().isSignedIn.get());
+          this.authorizeButton.onclick = this.handleAuthClick;
+          this.signoutButton.onclick = this.handleSignoutClick;
+        }, (error) => {
+          this.appendPre(JSON.stringify(error, null, 2));
+        });
+      },
+      updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          this.authorizeButton.style.display = 'none';
+          this.signoutButton.style.display = 'block';
+          this.listFiles();
+        } else {
+          this.authorizeButton.style.display = 'block';
+          this.signoutButton.style.display = 'none';
+        }
+      },
+      handleAuthClick() {
+        this.gapi.auth2.getAuthInstance().signIn();
+      },
+      handleSignoutClick() {
+        this.gapi.auth2.getAuthInstance().signOut();
+      },
+      appendPre(message) {
+        const pre = document.getElementById('content');
+        const textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      },
+      listFiles() {
+        this.gapi.client.drive.files.list({
+          'pageSize': 10,
+          'fields': "nextPageToken, files(id, name)"
+        }).then((response) => {
+            this.appendPre('Files:');
+            const files = response.result.files;
+            if (files && files.length > 0) {
+              for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                this.appendPre(file.name + ' (' + file.id + ')');
+              }
+            } else {
+              this.appendPre('No files found.');
+            }
+        });
+      },
     // Google API Client Library for JavaScript ロード時のイベント
     /* handleClientLoad() {
       gapi.load('client:auth2', () => {
@@ -172,18 +217,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
