@@ -31,7 +31,7 @@
         clientSecret: 'IJdpDEl7kJY_6hutq1C5lGZK'
       },
       refreshToken: 'yourRefreshToken',
-      apiKey: 'AIzaSyAt4zFCrqpQzUt_psIRRqv2l7tBUEVoywc',
+      apiKey: '',
       clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
       discoveryDocs: [],
       scopes: 'https://www.googleapis.com/auth/photoslibrary',
