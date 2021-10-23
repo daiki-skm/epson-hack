@@ -29,13 +29,13 @@ export default {
     picasa: null,
     accessToken: null,
     config: {
-      clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
+      clientId: '',
       redirectURI: 'https://daiki-photo.web.app/',
-      clientSecret: 'IJdpDEl7kJY_6hutq1C5lGZK'
+      clientSecret: ''
     },
     refreshToken: 'yourRefreshToken',
-    apiKey: 'AIzaSyAt4zFCrqpQzUt_psIRRqv2l7tBUEVoywc',
-    clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
+    apiKey: '',
+    clientId: '',
     discoveryDocs: [],
     scopes: 'https://www.googleapis.com/auth/photoslibrary',
     authorizeButton: null,
