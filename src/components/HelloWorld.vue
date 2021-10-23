@@ -26,13 +26,13 @@
       picasa: null,
       accessToken: null,
       config: {
-        clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
+        clientId: '',
         redirectURI: 'https://daiki-photo.web.app/',
-        clientSecret: 'IJdpDEl7kJY_6hutq1C5lGZK'
+        clientSecret: ''
       },
       refreshToken: 'yourRefreshToken',
       apiKey: '',
-      clientId: '1030214100740-ji93rpfe48k1rnsufifi9q4b5vh7urc8.apps.googleusercontent.com',
+      clientId: '',
       discoveryDocs: [],
       scopes: 'https://www.googleapis.com/auth/photoslibrary',
       authorizeButton: null,
@@ -176,7 +176,7 @@
           url: 'https://api.epsonconnect.com/api/1/printing/oauth2/auth/token?subject=printer',
           headers: { 
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 
-            'Authorization': 'Basic ZmZiMWYwMjhmZDQzNGZhYmFhNWMyYmNjN2VhOWY1NzI6YkN1YTllN1pESlRYcnAwZ3hDYzF3SVpLZTN2NUNnbDZobXBaYW1pdDVPSGVtUUFWTVJRMzRVUGc5aHNPZU04aw=='
+            'Authorization': 'Basic =='
           },
           data : data
         };
