@@ -1,5 +1,5 @@
 # epsonhack
-This is a repository of epson hackathon 2021.  
+This is a repository of the Epson hackathon on Feb. 28,29 2021.
 
 ## Theme
 The theme of this hackathon is "Accelerate smart cities with epson printer".  
